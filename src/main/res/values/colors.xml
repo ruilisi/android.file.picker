@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+
+    <color name="fp_white">#FFFFFF</color>
+    <color name="fp_black">#242433</color>
+    <color name="fp_status_bar">#33000000</color>
+</resources>
