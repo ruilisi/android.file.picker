@@ -45,14 +45,16 @@
                 android:id="@+id/common_toolbar_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:ellipsize="end"
-                android:maxLength="10"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/common_toolbar_back"
+                android:ellipsize="start"
+                android:paddingLeft="@dimen/dp_10"
+                android:paddingRight="@dimen/dp_50"
                 android:singleLine="true"
                 android:text="@{title}"
                 android:textColor="@color/fp_black"
                 android:textSize="@dimen/sp_20"
-                tools:text="客服" />
+                tools:text="客服xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" />
 
 
             <ImageView
