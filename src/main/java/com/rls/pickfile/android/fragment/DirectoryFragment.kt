@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.rls.pickfile.android.R
@@ -13,6 +14,7 @@ import com.rls.pickfile.android.adapter.DirectoryAdapter
 import com.rls.pickfile.android.listener.OnItemClickListener
 import com.rls.pickfile.android.utils.FileComparator
 import com.rls.pickfile.android.utils.FileUtils
+import com.rls.pickfile.android.viewmodel.FilePickerViewModel
 import com.rls.pickfile.android.widget.EmptyRecyclerView
 import kotlinx.coroutines.*
 import java.io.File
@@ -25,6 +27,7 @@ class DirectoryFragment : Fragment() {
     private var mDirectoryAdapter: DirectoryAdapter? = null
 
     private var mFileClickListener: FileClickListener? = null
+    private lateinit var mViewModel: FilePickerViewModel
 
     private var loadJob: Job? = null
 
@@ -36,10 +39,12 @@ class DirectoryFragment : Fragment() {
     override fun onDetach() {
         super.onDetach()
         mFileClickListener = null
+
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_directory, container, false)
+        mViewModel = ViewModelProvider(activity!!).get(FilePickerViewModel::class.java)
         mDirectoryRecyclerView = view.findViewById(R.id.directory_recycler_view)
         mEmptyView = view.findViewById(R.id.directory_empty_view)
         return view
@@ -55,13 +60,18 @@ class DirectoryFragment : Fragment() {
 
         loadJob = GlobalScope.launch(Dispatchers.Main) {
             val sortedList = withContext(Dispatchers.IO) {
-                val dataList = FileUtils.getFileList(mFile)
-                FileUtils.sortedFileList(dataList, FileComparator())
+                var dataList = mViewModel.pathMap[mFile?.absolutePath]
+                if (dataList.isNullOrEmpty()) {
+                    dataList = FileUtils.getFileList(mFile).toMutableList()
+                    dataList = FileUtils.sortedFileList(dataList, FileComparator()).toMutableList()
+                    mViewModel.pathMap[mFile?.absolutePath!!] = dataList
+                }
+                dataList
             }
             mDirectoryAdapter = DirectoryAdapter(sortedList.toMutableList())
             mDirectoryAdapter!!.setOnItemClickListener(object : OnItemClickListener {
                 override fun onItemClick(view: View?, position: Int) {
-                    mFileClickListener?.onFileClicked(mDirectoryAdapter?.getModel(position))
+                    mFileClickListener?.onFileClicked(mDirectoryAdapter?.getModel(position)!!)
                 }
             })
             mDirectoryRecyclerView?.layoutManager = LinearLayoutManager(activity)
@@ -93,6 +103,6 @@ class DirectoryFragment : Fragment() {
     }
 
     internal interface FileClickListener {
-        fun onFileClicked(clickedFile: File?)
+        fun onFileClicked(clickedFile: File)
     }
 }

@@ -1,7 +1,10 @@
 package com.rls.pickfile.android.activity
 
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -12,6 +15,7 @@ import com.rls.pickfile.android.fragment.DirectoryFragment
 import com.rls.pickfile.android.helper.AndroidPermissionsHelper
 import com.rls.pickfile.android.utils.FileUtils
 import com.rls.pickfile.android.viewmodel.FilePickerViewModel
+import com.rls.pickfile.android.viewmodel.FilePickerViewModel.Companion.RESULT_FILE_PATH
 import java.io.File
 import java.util.*
 
@@ -107,8 +111,29 @@ class FilePickerActivity : AppCompatActivity(), DirectoryFragment.FileClickListe
         mBinding = null
     }
 
-    override fun onFileClicked(clickedFile: File?) {
+    override fun onFileClicked(clickedFile: File) {
+        Handler(Looper.getMainLooper()).postDelayed({ handleFileClicked(clickedFile) }, 150L)
+    }
 
+    private fun handleFileClicked(clickedFile: File) {
+        if (isFinishing || isDestroyed) {
+            return
+        }
+
+        if (clickedFile.isDirectory) {
+            mViewModel?.mCurrent = clickedFile
+            addFragmentToBackStack(mViewModel?.mCurrent!!)
+            updateTitle()
+        } else {
+            setResultAndFinish(clickedFile)
+        }
+    }
+
+    private fun setResultAndFinish(file: File) {
+        val data = Intent()
+        data.putExtra(RESULT_FILE_PATH, file.path)
+        setResult(RESULT_OK, data)
+        finish()
     }
 
     override fun onBackPressed() {
