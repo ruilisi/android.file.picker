@@ -69,27 +69,31 @@ class DirectoryFragment : Fragment() {
                 }
                 dataList
             }
-            mDirectoryAdapter = DirectoryAdapter(sortedList.toMutableList())
-            mDirectoryAdapter!!.setOnItemClickListener(object : OnItemClickListener {
-                override fun onItemClick(view: View?, position: Int) {
-                    mFileClickListener?.onFileClicked(mDirectoryAdapter?.getModel(position)!!)
-                }
-            })
-            mDirectoryRecyclerView?.layoutManager = LinearLayoutManager(activity)
-            mDirectoryRecyclerView?.adapter = mDirectoryAdapter
-            mDirectoryRecyclerView?.setEmptyView(mEmptyView)
-
-            mDirectoryRecyclerView?.scrollToPosition(selection)
-
-            mDirectoryRecyclerView?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                        val layoutManager = recyclerView.layoutManager as LinearLayoutManager
-                        selection = layoutManager.findFirstVisibleItemPosition()
-                    }
-                }
-            })
+            initRecyclerView(sortedList)
         }
+    }
+
+    private fun initRecyclerView(sortedList: MutableList<File>) {
+        mDirectoryAdapter = DirectoryAdapter(sortedList.toMutableList())
+        mDirectoryAdapter!!.setOnItemClickListener(object : OnItemClickListener {
+            override fun onItemClick(view: View?, position: Int) {
+                mFileClickListener?.onFileClicked(mDirectoryAdapter?.getModel(position)!!)
+            }
+        })
+        mDirectoryRecyclerView?.layoutManager = LinearLayoutManager(activity)
+        mDirectoryRecyclerView?.adapter = mDirectoryAdapter
+        mDirectoryRecyclerView?.setEmptyView(mEmptyView)
+
+        mDirectoryRecyclerView?.scrollToPosition(selection)
+
+        mDirectoryRecyclerView?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                    selection = layoutManager.findFirstVisibleItemPosition()
+                }
+            }
+        })
     }
 
     private fun initArgs() {

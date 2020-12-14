@@ -3,6 +3,7 @@ package com.rls.pickfile.android.viewmodel
 import android.app.Activity
 import android.os.Environment
 import android.text.TextUtils
+import androidx.databinding.ObservableField
 import androidx.lifecycle.ViewModel
 import com.rls.pickfile.android.helper.AndroidPermissionsHelper
 import java.io.File
@@ -12,7 +13,7 @@ import java.io.File
  */
 class FilePickerViewModel : ViewModel() {
 
-    var title: String? = "File Picker"
+    var title: ObservableField<String> = ObservableField("File Picker")
 
     val mStart = Environment.getExternalStorageDirectory()
     var mCurrent = mStart

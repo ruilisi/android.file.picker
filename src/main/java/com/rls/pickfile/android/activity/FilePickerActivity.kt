@@ -97,9 +97,8 @@ class FilePickerActivity : AppCompatActivity(), DirectoryFragment.FileClickListe
 
 
     private fun updateTitle() {
-        mViewModel?.title = mViewModel?.mCurrent?.absolutePath ?: mViewModel?.title
+        mViewModel!!.title.set(mViewModel?.mCurrent?.absolutePath ?: mViewModel!!.title.get())
     }
-
 
     private fun showError() {
         Toast.makeText(this, "Allow external storage reading", Toast.LENGTH_SHORT).show()
