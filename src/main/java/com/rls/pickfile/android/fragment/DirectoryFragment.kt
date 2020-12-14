@@ -28,6 +28,7 @@ class DirectoryFragment : Fragment() {
 
     private var mFileClickListener: FileClickListener? = null
     private lateinit var mViewModel: FilePickerViewModel
+    private var selection: Int = 0
 
     private var loadJob: Job? = null
 
@@ -77,6 +78,17 @@ class DirectoryFragment : Fragment() {
             mDirectoryRecyclerView?.layoutManager = LinearLayoutManager(activity)
             mDirectoryRecyclerView?.adapter = mDirectoryAdapter
             mDirectoryRecyclerView?.setEmptyView(mEmptyView)
+
+            mDirectoryRecyclerView?.scrollToPosition(selection)
+
+            mDirectoryRecyclerView?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                        val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                        selection = layoutManager.findFirstVisibleItemPosition()
+                    }
+                }
+            })
         }
     }
 
