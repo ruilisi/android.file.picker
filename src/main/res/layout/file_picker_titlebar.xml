@@ -53,8 +53,7 @@
                 android:singleLine="true"
                 android:text="@{title}"
                 android:textColor="@color/fp_black"
-                android:textSize="@dimen/sp_20"
-                tools:text="客服xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" />
+                android:textSize="@dimen/sp_20" />
 
 
             <ImageView

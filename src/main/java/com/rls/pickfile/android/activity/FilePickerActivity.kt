@@ -59,6 +59,7 @@ class FilePickerActivity : AppCompatActivity(), DirectoryFragment.FileClickListe
         if (savedInstanceState == null) {
             initBackStackState()
         }
+        mBinding?.titleView?.commonToolbarBack?.setOnClickListener { onBackPressed() }
     }
 
     private fun initBackStackState() {
@@ -108,5 +109,16 @@ class FilePickerActivity : AppCompatActivity(), DirectoryFragment.FileClickListe
 
     override fun onFileClicked(clickedFile: File?) {
 
+    }
+
+    override fun onBackPressed() {
+        if (supportFragmentManager.backStackEntryCount > 1 && mViewModel != null) {
+            supportFragmentManager.popBackStack()
+            mViewModel?.mCurrent = FileUtils.getParentOrNull(mViewModel!!.mCurrent)
+            updateTitle()
+        } else {
+            setResult(RESULT_CANCELED)
+            finish()
+        }
     }
 }

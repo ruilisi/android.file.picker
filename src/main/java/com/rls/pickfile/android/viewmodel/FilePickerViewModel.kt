@@ -14,7 +14,7 @@ class FilePickerViewModel : ViewModel() {
     var title: String? = "File Picker"
 
     val mStart = Environment.getExternalStorageDirectory()
-    val mCurrent = mStart
+    var mCurrent = mStart
 
     companion object {
         const val RESULT_FILE_PATH = "result_file_path"
