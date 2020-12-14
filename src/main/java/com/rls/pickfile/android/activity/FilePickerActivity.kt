@@ -18,7 +18,7 @@ import java.util.*
 /**
  * Created by Ryan on 2020/12/12.
  */
-class FilePickerActivity : AppCompatActivity() {
+class FilePickerActivity : AppCompatActivity(), DirectoryFragment.FileClickListener {
 
     private var mBinding: ActivityFilePickerBinding? = null
     private var mViewModel: FilePickerViewModel? = null
@@ -104,5 +104,9 @@ class FilePickerActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         mBinding = null
+    }
+
+    override fun onFileClicked(clickedFile: File?) {
+
     }
 }

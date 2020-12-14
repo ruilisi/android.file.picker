@@ -9,9 +9,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.rls.pickfile.android.R
 import com.rls.pickfile.android.adapter.DirectoryAdapter.DirectoryViewHolder
 import com.rls.pickfile.android.listener.OnItemClickListener
+import com.rls.pickfile.android.utils.FileTypeUtils
 import java.io.File
 
-internal class DirectoryAdapter(private val mFiles: List<File>) : RecyclerView.Adapter<DirectoryViewHolder>() {
+internal class DirectoryAdapter(private val mFiles: List<File?>) : RecyclerView.Adapter<DirectoryViewHolder>() {
     private var mOnItemClickListener: OnItemClickListener? = null
     fun setOnItemClickListener(listener: OnItemClickListener?) {
         mOnItemClickListener = listener
@@ -26,21 +27,24 @@ internal class DirectoryAdapter(private val mFiles: List<File>) : RecyclerView.A
 
     override fun onBindViewHolder(holder: DirectoryViewHolder, position: Int) {
         val currentFile = mFiles[position]
-        holder.mFileTitle.text = currentFile.name
+        val fileType: FileTypeUtils.FileType = FileTypeUtils.getFileType(currentFile)
+        holder.mFileImage.setImageResource(fileType.icon)
+        holder.mFileSubtitle.setText(fileType.description)
+        holder.mFileTitle.text = currentFile?.name
     }
 
     override fun getItemCount(): Int {
         return mFiles.size
     }
 
-    fun getModel(index: Int): File {
+    fun getModel(index: Int): File? {
         return mFiles[index]
     }
 
     internal class DirectoryViewHolder(itemView: View, clickListener: OnItemClickListener?) : RecyclerView.ViewHolder(itemView) {
-        private val mFileImage: ImageView
+        val mFileImage: ImageView
         val mFileTitle: TextView
-        private val mFileSubtitle: TextView
+        val mFileSubtitle: TextView
 
         init {
             itemView.setOnClickListener { v: View? -> clickListener?.onItemClick(v, adapterPosition) }
