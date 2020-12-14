@@ -11,8 +11,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.rls.pickfile.android.R
 import com.rls.pickfile.android.adapter.DirectoryAdapter
 import com.rls.pickfile.android.listener.OnItemClickListener
+import com.rls.pickfile.android.utils.FileComparator
 import com.rls.pickfile.android.utils.FileUtils
 import com.rls.pickfile.android.widget.EmptyRecyclerView
+import kotlinx.coroutines.*
 import java.io.File
 import java.util.*
 
@@ -23,6 +25,8 @@ class DirectoryFragment : Fragment() {
     private var mDirectoryAdapter: DirectoryAdapter? = null
 
     private var mFileClickListener: FileClickListener? = null
+
+    private var loadJob: Job? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -48,15 +52,22 @@ class DirectoryFragment : Fragment() {
     }
 
     private fun initFilesList() {
-        mDirectoryAdapter = DirectoryAdapter(FileUtils.getFileList(mFile))
-        mDirectoryAdapter!!.setOnItemClickListener(object : OnItemClickListener {
-            override fun onItemClick(view: View?, position: Int) {
-                mFileClickListener?.onFileClicked(mDirectoryAdapter?.getModel(position))
+
+        loadJob = GlobalScope.launch(Dispatchers.Main) {
+            val sortedList = withContext(Dispatchers.IO) {
+                val dataList = FileUtils.getFileList(mFile)
+                FileUtils.sortedFileList(dataList, FileComparator())
             }
-        })
-        mDirectoryRecyclerView?.layoutManager = LinearLayoutManager(activity)
-        mDirectoryRecyclerView?.adapter = mDirectoryAdapter
-        mDirectoryRecyclerView?.setEmptyView(mEmptyView)
+            mDirectoryAdapter = DirectoryAdapter(sortedList.toMutableList())
+            mDirectoryAdapter!!.setOnItemClickListener(object : OnItemClickListener {
+                override fun onItemClick(view: View?, position: Int) {
+                    mFileClickListener?.onFileClicked(mDirectoryAdapter?.getModel(position))
+                }
+            })
+            mDirectoryRecyclerView?.layoutManager = LinearLayoutManager(activity)
+            mDirectoryRecyclerView?.adapter = mDirectoryAdapter
+            mDirectoryRecyclerView?.setEmptyView(mEmptyView)
+        }
     }
 
     private fun initArgs() {
@@ -74,6 +85,11 @@ class DirectoryFragment : Fragment() {
             instance.arguments = args
             return instance
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        loadJob?.cancel()
     }
 
     internal interface FileClickListener {

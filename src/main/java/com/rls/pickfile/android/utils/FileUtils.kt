@@ -15,8 +15,12 @@ object FileUtils {
         } else file.parentFile
     }
 
-    fun getFileList(directory: File?): List<File?> {
-        return directory?.listFiles()?.toList()?.sortedWith(FileComparator()) ?: listOf()
+    fun getFileList(directory: File?): List<File> {
+        return directory?.listFiles()?.toList() ?: listOf()
+    }
+
+    fun sortedFileList(list: List<File>, comparator: FileComparator): List<File> {
+        return list.sortedWith(comparator)
     }
 
 }

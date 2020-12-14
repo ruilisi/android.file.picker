@@ -12,7 +12,7 @@ import com.rls.pickfile.android.listener.OnItemClickListener
 import com.rls.pickfile.android.utils.FileTypeUtils
 import java.io.File
 
-internal class DirectoryAdapter(private val mFiles: List<File?>) : RecyclerView.Adapter<DirectoryViewHolder>() {
+internal class DirectoryAdapter(private val mFiles: MutableList<File?>) : RecyclerView.Adapter<DirectoryViewHolder>() {
     private var mOnItemClickListener: OnItemClickListener? = null
     fun setOnItemClickListener(listener: OnItemClickListener?) {
         mOnItemClickListener = listener
@@ -39,6 +39,12 @@ internal class DirectoryAdapter(private val mFiles: List<File?>) : RecyclerView.
 
     fun getModel(index: Int): File? {
         return mFiles[index]
+    }
+
+    fun setData(mFiles: List<File?>) {
+        this.mFiles.clear()
+        this.mFiles.addAll(mFiles)
+        notifyDataSetChanged()
     }
 
     internal class DirectoryViewHolder(itemView: View, clickListener: OnItemClickListener?) : RecyclerView.ViewHolder(itemView) {
