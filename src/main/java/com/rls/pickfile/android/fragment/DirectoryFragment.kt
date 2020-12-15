@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.rls.pickfile.android.R
 import com.rls.pickfile.android.adapter.DirectoryAdapter
+import com.rls.pickfile.android.helper.FileFilter
 import com.rls.pickfile.android.listener.OnItemClickListener
 import com.rls.pickfile.android.utils.FileComparator
 import com.rls.pickfile.android.utils.FileUtils
@@ -18,7 +19,6 @@ import com.rls.pickfile.android.viewmodel.FilePickerViewModel
 import com.rls.pickfile.android.widget.EmptyRecyclerView
 import kotlinx.coroutines.*
 import java.io.File
-import java.util.*
 
 class DirectoryFragment : Fragment() {
     private var mEmptyView: View? = null
@@ -31,6 +31,8 @@ class DirectoryFragment : Fragment() {
     private var selection: Int = 0
 
     private var loadJob: Job? = null
+    private var mFilter: FileFilter? = null
+
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -63,7 +65,7 @@ class DirectoryFragment : Fragment() {
             val sortedList = withContext(Dispatchers.IO) {
                 var dataList = mViewModel.pathMap[mFile?.absolutePath]
                 if (dataList.isNullOrEmpty()) {
-                    dataList = FileUtils.getFileList(mFile).toMutableList()
+                    dataList = FileUtils.getFileList(mFile, mFilter).toMutableList()
                     dataList = FileUtils.sortedFileList(dataList, FileComparator()).toMutableList()
                     mViewModel.pathMap[mFile?.absolutePath!!] = dataList
                 }
@@ -100,14 +102,19 @@ class DirectoryFragment : Fragment() {
         if (arguments?.containsKey(ARG_FILE) == true) {
             mFile = arguments?.getSerializable(ARG_FILE) as File?
         }
+        if (arguments?.containsKey(ARG_FILTER) == true) {
+            mFilter = arguments?.getSerializable(ARG_FILTER) as FileFilter?
+        }
     }
 
     companion object {
         private const val ARG_FILE = "arg_file_path"
-        fun getInstance(file: File?): DirectoryFragment {
+        private const val ARG_FILTER = "arg_filter"
+        fun getInstance(file: File?, mFilter: FileFilter?): DirectoryFragment {
             val instance = DirectoryFragment()
             val args = Bundle()
             args.putSerializable(ARG_FILE, file)
+            args.putSerializable(ARG_FILTER, mFilter)
             instance.arguments = args
             return instance
         }

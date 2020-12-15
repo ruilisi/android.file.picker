@@ -13,10 +13,13 @@ import com.rls.pickfile.android.R
 import com.rls.pickfile.android.databinding.ActivityFilePickerBinding
 import com.rls.pickfile.android.fragment.DirectoryFragment
 import com.rls.pickfile.android.helper.AndroidPermissionsHelper
+import com.rls.pickfile.android.utils.CompositeFilter
 import com.rls.pickfile.android.utils.FileUtils
+import com.rls.pickfile.android.utils.HiddenFilter
 import com.rls.pickfile.android.viewmodel.FilePickerViewModel
 import com.rls.pickfile.android.viewmodel.FilePickerViewModel.Companion.RESULT_FILE_PATH
 import java.io.File
+import java.io.FileFilter
 import java.util.*
 
 /**
@@ -89,7 +92,7 @@ class FilePickerActivity : AppCompatActivity(), DirectoryFragment.FileClickListe
                 .beginTransaction()
                 .replace(
                         R.id.container,
-                        DirectoryFragment.getInstance(file)
+                        DirectoryFragment.getInstance(file,mViewModel?.mFileFilter)
                 )
                 .addToBackStack(null)
                 .commit()
@@ -130,7 +133,7 @@ class FilePickerActivity : AppCompatActivity(), DirectoryFragment.FileClickListe
 
     private fun setResultAndFinish(file: File) {
         val data = Intent()
-        data.putExtra(RESULT_FILE_PATH, file.path)
+        data.putExtra(RESULT_FILE_PATH, file.absolutePath)
         setResult(RESULT_OK, data)
         finish()
     }

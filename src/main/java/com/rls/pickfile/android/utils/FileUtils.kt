@@ -1,7 +1,7 @@
 package com.rls.pickfile.android.utils
 
+import com.rls.pickfile.android.helper.FileFilter
 import java.io.File
-import java.io.FileFilter
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -15,8 +15,12 @@ object FileUtils {
         } else file.parentFile
     }
 
-    fun getFileList(directory: File?): List<File> {
-        return directory?.listFiles()?.toList() ?: listOf()
+    fun getFileList(directory: File?, filter: FileFilter?): List<File> {
+        if (filter == null) {
+            return directory?.listFiles()?.toList() ?: listOf()
+        } else {
+            return directory?.listFiles(filter::accept)?.toList() ?: listOf()
+        }
     }
 
     fun sortedFileList(list: List<File>, comparator: FileComparator): List<File> {
